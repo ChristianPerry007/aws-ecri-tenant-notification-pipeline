@@ -1,8 +1,8 @@
-# AWS ECRI Tenant Notifcation Pipeline
+# AWS ECRI Tenant Notification Pipeline
 
 An event-driven, serverless ECRI (Existing Customer Rate Increase) Notification Pipeline designed in Terraform that notifies tenants a month in advance via email on the same day their physical mail notice goes out. A CSV of tenants that are due for a rate increase is uploaded to S3, it triggers the first Lambda Function to parse the list into DynamoDb where it is stored. From there, an EventBridge schedule triggers the second Lambda Function that checks who is due for a notice that day, emails them through SES, logs it into an S3 audit bucket, and marks them as notified so they don’t get the same alert twice. I built this because at my current job, tenants are only notified via physical mail about their rate increase and most of the time they call our facilities expressing they were never notified. This usually happens on the day of their rent increase or after the money has been taken from their bank.
 
-**ECRI Pipleine Diagram**
+**ECRI Pipeline Diagram**
 
 ![ECRI Pipeline](images/ecridesign.png)
 
@@ -14,7 +14,7 @@ An event-driven, serverless ECRI (Existing Customer Rate Increase) Notification 
 
 **DynamoDB** - Stores tenant records loaded by Lambda 1, using notification_date as the partition key so Lambda 2 can efficiently query "who's due today" without scanning the entire table. Chosen for its serverless, pay-per-request model, so no capacity planning was needed for a workload this small.
 
-**EventBridg** - Triggers Lambda 2 on a daily schedule, so notifications go out automatically.
+**EventBridge** - Triggers Lambda 2 on a daily schedule, so notifications go out automatically.
 
 **SES** - Sends the rate increase notification email to the tenant.
 
@@ -69,7 +69,8 @@ A couple of issues were revealed in deployment which needed debugging:
 **lambda.tf** - both Lambda functions, code packaged via archive_file, plus the S3 trigger for Lambda 1
 
 **eventbridge.tf** - daily scheduled rule that triggers Lambda 2
-ses.tf - verified sender email identity
+
+**ses.tf** - verified sender email identity
 
 ## Results:
 
