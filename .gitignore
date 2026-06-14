@@ -1,0 +1,8 @@
+# Terraform
+terraform.tfvars
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+.terraform.lock.hcl
+lambda/*.zip
